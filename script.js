@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryBtns = document.querySelectorAll('.category-btn');
     const cartBtn = document.getElementById('cart-btn');
     const closeCartBtn = document.getElementById('close-cart');
+    const continueShoppingBtn = document.getElementById('continue-shopping-btn');
     const cartSidebar = document.getElementById('cart-sidebar');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartItemsContainer = document.getElementById('cart-items');
@@ -142,8 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateCartUI();
-        openCart(); // Optional: open cart when adding
-        showNotification('تمت الإضافة للسلة');
+        // Removed auto-open to prevent sidebar from covering the view
+        // openCart(); 
+        showNotification(`تمت إضافة ${product.name} للسلة`);
     };
 
     window.removeFromCart = function(id) {
@@ -224,9 +226,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showNotification(msg) {
-        // Simple toast notification could be added here
-        // For now console.log is enough or we assume UI update is feedback enough
-        console.log(msg);
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 opacity-0 transition-opacity duration-300';
+        toast.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>${msg}</span>
+        `;
+        document.body.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.classList.remove('opacity-0');
+        });
+
+        // Remove after delay
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
     // --- Event Listeners ---
@@ -247,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cartBtn.addEventListener('click', openCart);
     closeCartBtn.addEventListener('click', closeCart);
+    if(continueShoppingBtn) continueShoppingBtn.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
     checkoutBtn.addEventListener('click', () => {
