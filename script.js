@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Functions ---
 
     function renderMenu(category = 'all') {
+        if (!menuContainer) return;
         menuContainer.innerHTML = '';
         
         const filteredProducts = category === 'all' 
@@ -143,8 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateCartUI();
-        // Removed auto-open to prevent sidebar from covering the view
-        // openCart(); 
         showNotification(`تمت إضافة ${product.name} للسلة`);
     };
 
@@ -166,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function updateCartUI() {
+        if (!cartItemsContainer) return;
         cartItemsContainer.innerHTML = '';
         let total = 0;
         let count = 0;
@@ -177,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>السلة فارغة حالياً</p>
                 </div>
             `;
-            checkoutBtn.disabled = true;
-            cartCountBadge.classList.add('hidden');
+            if(checkoutBtn) checkoutBtn.disabled = true;
+            if(cartCountBadge) cartCountBadge.classList.add('hidden');
         } else {
             cart.forEach(item => {
                 total += item.price * item.quantity;
@@ -202,31 +202,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 cartItemsContainer.appendChild(cartItem);
             });
-            checkoutBtn.disabled = false;
-            cartCountBadge.textContent = count;
-            cartCountBadge.classList.remove('hidden');
+            if(checkoutBtn) checkoutBtn.disabled = false;
+            if(cartCountBadge) {
+                cartCountBadge.textContent = count;
+                cartCountBadge.classList.remove('hidden');
+            }
         }
 
-        cartTotalElement.textContent = total + ' ريال';
+        if(cartTotalElement) cartTotalElement.textContent = total + ' ريال';
     }
 
     function openCart() {
-        cartSidebar.classList.remove('cart-closed');
-        cartSidebar.classList.add('cart-open');
+        // Use Tailwind utility translate-x-full to hide/show
+        // Removing it shows the sidebar (default transform is 0)
+        cartSidebar.classList.remove('translate-x-full');
         cartOverlay.classList.remove('hidden');
-        // Small delay for fade in
         setTimeout(() => cartOverlay.classList.remove('opacity-0'), 10);
     }
 
     function closeCart() {
-        cartSidebar.classList.remove('cart-open');
-        cartSidebar.classList.add('cart-closed');
+        // Adding it hides the sidebar to the right
+        cartSidebar.classList.add('translate-x-full');
         cartOverlay.classList.add('opacity-0');
         setTimeout(() => cartOverlay.classList.add('hidden'), 300);
     }
 
     function showNotification(msg) {
-        // Create toast element
         const toast = document.createElement('div');
         toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 opacity-0 transition-opacity duration-300';
         toast.innerHTML = `
@@ -237,12 +238,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.body.appendChild(toast);
 
-        // Animate in
         requestAnimationFrame(() => {
             toast.classList.remove('opacity-0');
         });
 
-        // Remove after delay
         setTimeout(() => {
             toast.classList.add('opacity-0');
             setTimeout(() => toast.remove(), 300);
@@ -253,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Update active state
             categoryBtns.forEach(b => {
                 b.classList.remove('bg-amber-600', 'text-white');
                 b.classList.add('bg-white', 'text-gray-600');
@@ -265,31 +263,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    cartBtn.addEventListener('click', openCart);
-    closeCartBtn.addEventListener('click', closeCart);
+    if(cartBtn) cartBtn.addEventListener('click', openCart);
+    if(closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
     if(continueShoppingBtn) continueShoppingBtn.addEventListener('click', closeCart);
-    cartOverlay.addEventListener('click', closeCart);
+    if(cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
-    checkoutBtn.addEventListener('click', () => {
-        closeCart();
-        checkoutModal.classList.remove('hidden');
-    });
+    if(checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+            closeCart();
+            checkoutModal.classList.remove('hidden');
+        });
+    }
 
-    cancelCheckoutBtn.addEventListener('click', () => {
-        checkoutModal.classList.add('hidden');
-    });
+    if(cancelCheckoutBtn) {
+        cancelCheckoutBtn.addEventListener('click', () => {
+            checkoutModal.classList.add('hidden');
+        });
+    }
     
-    closeModalBg.addEventListener('click', () => {
-        checkoutModal.classList.add('hidden');
-    });
+    if(closeModalBg) {
+        closeModalBg.addEventListener('click', () => {
+            checkoutModal.classList.add('hidden');
+        });
+    }
 
-    orderForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('شكراً لك! تم استلام طلبك بنجاح وسيصلك قريباً.');
-        checkoutModal.classList.add('hidden');
-        cart = [];
-        updateCartUI();
-    });
+    if(orderForm) {
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('شكراً لك! تم استلام طلبك بنجاح وسيصلك قريباً.');
+            checkoutModal.classList.add('hidden');
+            cart = [];
+            updateCartUI();
+        });
+    }
 
     // --- Init ---
     renderMenu();
