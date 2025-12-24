@@ -20,8 +20,9 @@
       .cart-open {
         transform: translateX(0);
       }
+      /* Changed for RTL: hide to the right */
       .cart-closed {
-        transform: translateX(-100%);
+        transform: translateX(100%);
       }
     </style>
 </head>
@@ -73,8 +74,8 @@
     <!-- Cart Sidebar Overlay -->
     <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity opacity-0"></div>
 
-    <!-- Cart Sidebar -->
-    <div id="cart-sidebar" class="fixed inset-y-0 left-0 w-full md:w-96 bg-white shadow-xl z-50 transform cart-closed transition-transform duration-300 ease-in-out flex flex-col">
+    <!-- Cart Sidebar (Moved to right side for RTL) -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-xl z-50 transform cart-closed transition-transform duration-300 ease-in-out flex flex-col">
         <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-amber-50">
             <h2 class="text-lg font-bold text-gray-800">سلة الطلبات</h2>
             <button id="close-cart" class="text-gray-500 hover:text-red-500">
@@ -97,9 +98,14 @@
                 <span class="font-bold text-gray-700">المجموع:</span>
                 <span id="cart-total" class="font-bold text-xl text-amber-600">0 ريال</span>
             </div>
-            <button id="checkout-btn" class="w-full bg-amber-600 text-white py-3 rounded-lg font-bold hover:bg-amber-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                إتمام الطلب
-            </button>
+            <div class="flex flex-col gap-3">
+                <button id="checkout-btn" class="w-full bg-amber-600 text-white py-3 rounded-lg font-bold hover:bg-amber-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    إتمام الطلب
+                </button>
+                <button id="continue-shopping-btn" class="w-full bg-white text-gray-700 py-3 rounded-lg font-bold border border-gray-300 hover:bg-gray-50 transition duration-300 md:hidden">
+                    تابع التسوق
+                </button>
+            </div>
         </div>
     </div>
 
